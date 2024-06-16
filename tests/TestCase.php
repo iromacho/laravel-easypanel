@@ -9,19 +9,19 @@ use EasyPanelTest\Dependencies\User;
 use Faker\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Iya30n\DynamicAcl\Providers\DynamicAclServiceProvider;
-use Javoscript\MacroableModels\MacroableModelsServiceProvider;
 use Livewire\LivewireServiceProvider;
+use function Orchestra\Testbench\workbench_path;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
+    use RefreshDatabase;
 
     /**
      * @var Collection|Model
      */
     protected $user;
-
     /**
      * @var StubParser
      */
@@ -36,18 +36,32 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         return $this->user->refresh();
     }
 
+    /**
+     * Define database migrations.
+     *
+     * @return void
+     */
+    protected function defineDatabaseMigrations()
+    {
+        $this->loadMigrationsFrom(workbench_path(__DIR__ . '/Dependencies/database/migrations'));
+    }
+
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(__DIR__ . '/Dependencies/database/migrations');
-        $this->loadMigrationsFrom(__DIR__ . '/../vendor/iya30n/dynamic-acl/database/migrations');
-        $this->setUser();
-        $this->setParser();
 
         config()->set('easy_panel.user_model', User::class);
         config()->set('easy_panel.database.panel_admin_table', 'panel_admins');
         config()->set('easy_panel.database.crud_table', 'cruds');
+        config()->set('easy_panel.database.roles_table', 'roles');
+        config()->set('easy_panel.database.roles_users_table', 'role_user');
+
+
+        $this->setUser();
+        $this->setParser();
+
 
     }
 
@@ -68,8 +82,6 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         return [
             EasyPanelServiceProvider::class,
             LivewireServiceProvider::class,
-            MacroableModelsServiceProvider::class,
-            DynamicAclServiceProvider::class,
         ];
     }
 }

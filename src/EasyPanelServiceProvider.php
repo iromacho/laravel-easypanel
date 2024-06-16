@@ -21,6 +21,7 @@ use EasyPanel\Commands\{Actions\DeleteCRUD,
 use EasyPanel\Http\Middleware\isAdmin;
 use EasyPanel\Http\Middleware\LangChanger;
 use EasyPanel\Models\PanelAdmin;
+use EasyPanel\Models\Role;
 use EasyPanel\Support\Contract\{AuthFacade, LangManager, UserProviderFacade};
 use EasyPanelTest\Dependencies\User;
 use Exception;
@@ -31,6 +32,7 @@ use Illuminate\{Routing\Router,
     Support\Facades\Route,
     Support\ServiceProvider};
 use Livewire\Livewire;
+use Throwable;
 
 class EasyPanelServiceProvider extends ServiceProvider
 {
@@ -232,13 +234,24 @@ class EasyPanelServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     private function loadRelations()
     {
         $model = !$this->app->runningUnitTests() ? config('easy_panel.user_model') : User::class;
 
+        throw_if(!class_exists($model), new Exception("The class \"$model\" does not exists"));
+
+        $model::resolveRelationUsing('roles', function ($userModel) {
+            return $userModel->belongsToMany(Role::class, config('easy_panel.database.roles_users_table'));
+        });
+
         $model::resolveRelationUsing('panelAdmin', function ($userModel) {
             return $userModel->hasOne(PanelAdmin::class)->latest();
         });
+
+
     }
 
 }

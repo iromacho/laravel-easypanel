@@ -5,6 +5,7 @@ namespace EasyPanel\Parsers\Fields;
 
 
 use EasyPanel\Concerns\Translatable;
+use Str;
 
 class Field
 {
@@ -46,7 +47,7 @@ class Field
 
     public function asImage()
     {
-        if($this->dataStub != 'linked-image.stub'){
+        if ($this->dataStub != 'linked-image.stub') {
             $this->dataStub = 'image.stub';
         }
 
@@ -181,6 +182,20 @@ class Field
         return str_replace(array_keys($array), array_values($array), $stubContent);
     }
 
+    private function getTitleStubContent()
+    {
+        if ($this->isRelational()) {
+            return file_get_contents(__DIR__ . '/stubs/titles/not-sortable.stub');
+        }
+
+        return file_get_contents(__DIR__ . '/stubs/titles/' . $this->headStub);
+    }
+
+    private function isRelational()
+    {
+        return Str::contains($this->key, '.');
+    }
+
     public function withoutSorting()
     {
         $this->headStub = 'not-sortable.stub';
@@ -214,24 +229,11 @@ class Field
 
     private function getDataStubContent()
     {
-        return file_get_contents(__DIR__.'/stubs/'.$this->dataStub);
+        return file_get_contents(__DIR__ . '/stubs/' . $this->dataStub);
     }
 
-    private function getTitleStubContent()
+    private function parseRelationalKey($key)
     {
-        if ($this->isRelational()){
-            return file_get_contents(__DIR__.'/stubs/titles/not-sortable.stub');
-        }
-
-        return file_get_contents(__DIR__.'/stubs/titles/'.$this->headStub);
-    }
-
-    private function isRelational()
-    {
-        return \Str::contains($this->key, '.');
-    }
-
-    private function parseRelationalKey($key){
         return str_replace('.', '->', $key);
     }
 

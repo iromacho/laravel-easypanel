@@ -4,6 +4,8 @@
 namespace EasyPanel\Parsers\HTMLInputs;
 
 
+use Exception;
+
 abstract class InputList
 {
     const inputClassMap = [
@@ -23,8 +25,8 @@ abstract class InputList
 
     public static function get($name)
     {
-        if (!key_exists($name, static::inputClassMap)){
-            throw new \Exception("The [$name] input type doesn't exist in input list!");
+        if (!key_exists($name, static::inputClassMap)) {
+            throw new Exception("The [$name] input type doesn't exist in input list!");
         }
 
         return static::inputClassMap[$name];

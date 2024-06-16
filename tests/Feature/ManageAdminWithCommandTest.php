@@ -2,28 +2,30 @@
 
 namespace EasyPanelTest\Feature;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use EasyPanel\Support\Contract\UserProviderFacade;
+use EasyPanelTest\TestCase;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
-use EasyPanelTest\TestCase;
-use EasyPanel\Support\Contract\UserProviderFacade;
-use Illuminate\Support\Facades\Schema;
+
 class ManageAdminWithCommandTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     /** @test * */
-    public function create_admin_with_command(){
+    public function create_admin_with_command()
+    {
 
         Artisan::call('panel:add', [
             'user' => $this->user->id
         ]);
 
-        $this->assertTrue( (bool) $this->user->panelAdmin()->exists());
+        $this->assertTrue((bool)$this->user->panelAdmin()->exists());
     }
 
     /** @test * */
-    public function message_will_be_written_from_user_provider(){
+    public function message_will_be_written_from_user_provider()
+    {
         UserProviderFacade::shouldReceive('makeAdmin')
             ->with($this->user->id, true)
             ->once()
@@ -39,11 +41,12 @@ class ManageAdminWithCommandTest extends TestCase
     }
 
     /** @test * */
-    public function it_shows_error_when_an_exception_is_thrown(){
+    public function it_shows_error_when_an_exception_is_thrown()
+    {
         UserProviderFacade::shouldReceive('makeAdmin')
             ->with($this->user->id, true)
             ->once()
-            ->andThrow(\Exception::class, 'Error');
+            ->andThrow(Exception::class, 'Error');
 
         $this->artisan('panel:add', [
             'user' => $this->user->id,
@@ -52,7 +55,8 @@ class ManageAdminWithCommandTest extends TestCase
     }
 
     /** @test * */
-    public function remove_admin_with_command(){
+    public function remove_admin_with_command()
+    {
         Artisan::call('panel:add', [
             'user' => $this->user->id
         ]);
@@ -62,18 +66,20 @@ class ManageAdminWithCommandTest extends TestCase
             '--force' => true
         ]);
 
-        $this->assertFalse( (bool) $this->user->panelAdmin()->exists());
+        $this->assertFalse((bool)$this->user->panelAdmin()->exists());
     }
 
     /** @test * */
-    public function it_asks_to_remove_an_admin(){
+    public function it_asks_to_remove_an_admin()
+    {
         $this->artisan('panel:remove', [
             'user' => 1
         ])->expectsConfirmation("Do you want to remove 1 from administration");
     }
 
     /** @test * */
-    public function all_admins_is_listed(){
+    public function all_admins_is_listed()
+    {
         Artisan::call('panel:add', [
             'user' => $this->user->id
         ]);
@@ -83,7 +89,8 @@ class ManageAdminWithCommandTest extends TestCase
     }
 
     /** @test * */
-    public function all_super_users_are_returned(){
+    public function all_super_users_are_returned()
+    {
         Artisan::call('panel:add', [
             'user' => $this->user->id,
             '--super' => true

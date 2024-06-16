@@ -2,9 +2,10 @@
 
 namespace EasyPanel\Http\Livewire\Role;
 
-use Livewire\Component;
+use Exception;
 use Iya30n\DynamicAcl\ACL;
 use Iya30n\DynamicAcl\Models\Role;
+use Livewire\Component;
 
 class Create extends Component
 {
@@ -21,22 +22,11 @@ class Create extends Component
         'access' => 'required'
     ];
 
-    private function fixAccessKeys()
-    {
-        foreach($this->access as $key => $value) {
-            unset($this->access[$key]);
-            $key = str_replace('-', '.', $key);
-            $this->access[$key] = is_array($value) ? array_filter($value) : $value;
-        }
-
-        return array_filter($this->access);
-    }
-
-    /** 
+    /**
      * this method checks if whole checkboxes checked, set value true for SelectAll checkbox
-     * 
+     *
      * @param string $key
-     * 
+     *
      * @param string $dashKey
      */
     public function checkSelectedAll($key, $dashKey)
@@ -54,12 +44,23 @@ class Create extends Component
         try {
             Role::create(['name' => $this->name, 'permissions' => $this->fixAccessKeys()]);
 
-            $this->dispatchBrowserEvent('show-message', ['type' => 'success', 'message' => __('CreatedMessage', ['name' => __('Role') ])]);
-        } catch (\Exception $exception){
+            $this->dispatchBrowserEvent('show-message', ['type' => 'success', 'message' => __('CreatedMessage', ['name' => __('Role')])]);
+        } catch (Exception $exception) {
             $this->dispatchBrowserEvent('show-message', ['type' => 'error', 'message' => $exception->getMessage()]);
         }
 
         $this->reset();
+    }
+
+    private function fixAccessKeys()
+    {
+        foreach ($this->access as $key => $value) {
+            unset($this->access[$key]);
+            $key = str_replace('-', '.', $key);
+            $this->access[$key] = is_array($value) ? array_filter($value) : $value;
+        }
+
+        return array_filter($this->access);
     }
 
     public function render()
@@ -67,6 +68,6 @@ class Create extends Component
         $this->permissionsData = ACL::getRoutes();
 
         return view('admin::livewire.role.create', ['permissions' => $this->permissionsData])
-            ->layout('admin::layouts.app', ['title' => __('CreateTitle', ['name' => __('Role') ])]);
+            ->layout('admin::layouts.app', ['title' => __('CreateTitle', ['name' => __('Role')])]);
     }
 }

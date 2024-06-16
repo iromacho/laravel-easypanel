@@ -9,35 +9,58 @@
         }
     ],
     "require": {
-        "php": "^7.3|^8.0",
-        "illuminate/support": "^8.0|^9.0|^10.0",
-        "rezaamini-ir/laravel-easyblade" : "^0.5|^1.0",
+        "php": "^8.0",
+        "illuminate/support": "^9.0|^10.0",
+        "rezaamini-ir/laravel-easyblade": "^0.5|^1.0",
         "laravel/framework": "^8.0|^9.0|^10.0",
-        "livewire/livewire": "^1.0|^2.3",
-        "iya30n/dynamic-acl": "^1.0"
+        "livewire/livewire": "^2.3"
     },
     "require-dev": {
-        "orchestra/testbench": "~3.7|^4.0|^5.0|^6.0"
+        "orchestra/testbench": "^8.23"
     },
     "autoload": {
         "psr-4": {
-            "EasyPanel\\" : "src/"
+            "EasyPanel\\": "src/"
         },
-        "files": ["src/helpers.php"]
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
-            "EasyPanelTest\\" : "tests/"
+            "EasyPanelTest\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
         }
     },
-
     "extra": {
-        "laravel" : {
-            "providers" : [
+        "laravel": {
+            "providers": [
                 "EasyPanel\\EasyPanelServiceProvider"
             ]
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve"
+        ],
+        "lint": [
+            "@php vendor/bin/phpstan analyse"
+        ],
+        "test": [
+            "@php vendor/bin/phpunit"
+        ]
+    }
 }

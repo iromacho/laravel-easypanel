@@ -3,6 +3,7 @@
 namespace EasyPanel\Commands\UserActions;
 
 use EasyPanel\Support\Contract\UserProviderFacade;
+use Exception;
 use Illuminate\Console\Command;
 
 class MakeAdmin extends Command
@@ -15,13 +16,13 @@ class MakeAdmin extends Command
     public function handle()
     {
         $user = $this->argument('user');
-        try{
+        try {
             $status = UserProviderFacade::makeAdmin($user, $this->option('super'));
             $method = $status['type'] == 'success' ? 'info' : 'warn';
 
             $this->$method($status['message']);
-        } catch (\Exception $exception){
-            $this->warn("Something went wrong!\nError: ". $exception->getMessage());
+        } catch (Exception $exception) {
+            $this->warn("Something went wrong!\nError: " . $exception->getMessage());
         }
     }
 

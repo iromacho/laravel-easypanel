@@ -4,26 +4,20 @@
 namespace EasyPanelTest\Feature;
 
 use EasyPanel\Http\Middleware\isAdmin;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use EasyPanel\Http\Middleware\LangChanger;
+use EasyPanelTest\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use EasyPanel\Http\Middleware\LangChanger;
-use EasyPanelTest\TestCase;
+use Illuminate\Support\Facades\Route;
 
 class MiddlewareTest extends TestCase
 {
-    use DatabaseMigrations;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->addRouteWithAdminMiddleware();
-    }
+    use RefreshDatabase;
 
     /** @test * */
-    public function user_is_unauthorized(){
+    public function user_is_unauthorized()
+    {
         $this->actingAs($this->user);
 
         $this->get('/test')
@@ -36,7 +30,8 @@ class MiddlewareTest extends TestCase
     }
 
     /** @test * */
-    public function a_default_guard_will_be_used_when_custom_guard_is_null(){
+    public function a_default_guard_will_be_used_when_custom_guard_is_null()
+    {
         config()->set('easy_panel.redirect_unauthorized', null);
 
         $this->actingAs($this->user);
@@ -46,7 +41,8 @@ class MiddlewareTest extends TestCase
     }
 
     /** @test * */
-    public function user_is_valid(){
+    public function user_is_valid()
+    {
         $this->withoutExceptionHandling();
 
         $this->addRouteWithAdminMiddleware();
@@ -56,8 +52,15 @@ class MiddlewareTest extends TestCase
             ->assertOk();
     }
 
+    private function addRouteWithAdminMiddleware()
+    {
+        Route::get('/test', function () {
+        })->middleware([isAdmin::class, LangChanger::class]);
+    }
+
     /** @test * */
-    public function language_will_be_set(){
+    public function language_will_be_set()
+    {
         $this->addRouteWithAdminMiddleware();
 
         $this->actingAs($this->getAdmin())->get('/test');
@@ -66,7 +69,8 @@ class MiddlewareTest extends TestCase
     }
 
     /** @test * */
-    public function a_guest_user_will_be_redirected(){
+    public function a_guest_user_will_be_redirected()
+    {
         $this->get('/test')
             ->assertRedirect();
 
@@ -77,7 +81,8 @@ class MiddlewareTest extends TestCase
     }
 
     /** @test * */
-    public function a_custom_language_is_applied(){
+    public function a_custom_language_is_applied()
+    {
         config()->set('easy_panel.lang', 'fa');
 
         $this->actingAs($this->getAdmin())->get('/test');
@@ -86,7 +91,8 @@ class MiddlewareTest extends TestCase
     }
 
     /** @test * */
-    public function a_default_language_is_applied_when_its_null(){
+    public function a_default_language_is_applied_when_its_null()
+    {
         config()->set('easy_panel.lang', null);
 
         $this->actingAs($this->getAdmin())->get('/test');
@@ -95,7 +101,8 @@ class MiddlewareTest extends TestCase
     }
 
     /** @test * */
-    public function it_will_read_the_session_for_changing_lang(){
+    public function it_will_read_the_session_for_changing_lang()
+    {
         session()->put('easypanel_lang', 'fa_panel');
 
         $this->actingAs($this->getAdmin())->get('/test');
@@ -104,7 +111,8 @@ class MiddlewareTest extends TestCase
     }
 
     /** @test * */
-    public function auth_guard_is_read_from_config(){
+    public function auth_guard_is_read_from_config()
+    {
         config()->set('easy_panel.auth_guard', '::test_guard::');
 
         $this->actingAs($this->getAdmin())->get('/test');
@@ -113,7 +121,8 @@ class MiddlewareTest extends TestCase
     }
 
     /** @test * */
-    public function auth_guard_is_set_when_its_null(){
+    public function auth_guard_is_set_when_its_null()
+    {
         config()->set('easy_panel.auth_guard', null);
 
         $this->actingAs($this->getAdmin())->get('/test');
@@ -121,8 +130,10 @@ class MiddlewareTest extends TestCase
         $this->assertEquals(config('auth.defaults.guard'), Auth::getDefaultDriver());
     }
 
-    private function addRouteWithAdminMiddleware(){
-        \Illuminate\Support\Facades\Route::get('/test', function () {
-        })->middleware([isAdmin::class, LangChanger::class]);
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->addRouteWithAdminMiddleware();
     }
 }

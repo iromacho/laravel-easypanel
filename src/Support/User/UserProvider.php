@@ -2,8 +2,9 @@
 
 namespace EasyPanel\Support\User;
 
-use App\Models\User;
-use Iya30n\DynamicAcl\Models\Role;
+
+use EasyPanel\Models\Role;
+
 
 class UserProvider
 {
@@ -12,7 +13,7 @@ class UserProvider
     {
         $user = $this->findUser($id);
 
-        if ($user->panelAdmin()->exists()){
+        if ($user->panelAdmin()->exists()) {
             return [
                 'type' => 'error',
                 'message' => 'User already is an admin!'
@@ -23,7 +24,7 @@ class UserProvider
             'is_superuser' => $is_super,
         ]);
 
-        if($is_super)
+        if ($is_super)
             $this->makeSuperAdminRole($user);
 
         return [
@@ -32,31 +33,14 @@ class UserProvider
         ];
     }
 
-    public function getAdmins()
-    {
-        return $this->getUserModel()::query()->whereHas('panelAdmin')->with('panelAdmin')->get();
-    }
-
-    public function paginateAdmins($perPage = 20)
-    {
-        return $this->getUserModel()::query()->whereHas('panelAdmin')->with('panelAdmin')->paginate($perPage);
-    }
-
     public function findUser($id)
     {
         return $this->getUserModel()::query()->findOrFail($id);
     }
 
-    public function deleteAdmin($id)
-    {
-        $user = $this->findUser($id);
-
-        $user->panelAdmin()->delete();
-    }
-
     private function getUserModel()
     {
-        return config('easy_panel.user_model') ?? User::class;
+        return config('easy_panel.user_model', 'App\Models\User');
     }
 
     private function makeSuperAdminRole($user)
@@ -69,6 +53,23 @@ class UserProvider
         ]);
 
         $role->users()->sync([$user->id]);
+    }
+
+    public function getAdmins()
+    {
+        return $this->getUserModel()::query()->whereHas('panelAdmin')->with('panelAdmin')->get();
+    }
+
+    public function paginateAdmins($perPage = 20)
+    {
+        return $this->getUserModel()::query()->whereHas('panelAdmin')->with('panelAdmin')->paginate($perPage);
+    }
+
+    public function deleteAdmin($id)
+    {
+        $user = $this->findUser($id);
+
+        $user->panelAdmin()->delete();
     }
 
 }

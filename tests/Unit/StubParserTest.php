@@ -3,19 +3,21 @@
 namespace EasyPanelTest\Unit;
 
 
-use EasyPanelTest\Dependencies\Article;
-use EasyPanelTest\Dependencies\User;
-use Illuminate\Support\Str;
-use EasyPanel\Parsers\HTMLInputs\Text;
-use EasyPanel\Parsers\HTMLInputs\Select;
 use EasyPanel\Parsers\Fields\Field;
 use EasyPanel\Parsers\HTMLInputs\Email;
+use EasyPanel\Parsers\HTMLInputs\Select;
+use EasyPanel\Parsers\HTMLInputs\Text;
+use EasyPanelTest\Dependencies\Article;
+use EasyPanelTest\Dependencies\User;
+use EasyPanelTest\TestCase;
+use Exception;
 
-class StubParserTest extends \EasyPanelTest\TestCase
+class StubParserTest extends TestCase
 {
 
     /** @test * */
-    public function make_tab_works(){
+    public function make_tab_works()
+    {
         $expected = "\n    ";
         $this->assertEquals($expected, $this->parser->makeTab(1));
 
@@ -27,13 +29,15 @@ class StubParserTest extends \EasyPanelTest\TestCase
     }
 
     /** @test * */
-    public function get_model_name_gives_true_name(){
+    public function get_model_name_gives_true_name()
+    {
         $this->assertEquals("Article", $this->parser->getModelName(Article::class));
         $this->assertEquals("User", $this->parser->getModelName(User::class));
     }
 
     /** @test * */
-    public function properties_will_be_parsed(){
+    public function properties_will_be_parsed()
+    {
         $this->parser->setInputs(['title' => 'text', 'content' => 'textarea']);
         $expected1 = 'public $title;';
         $expected2 = '    public $content;';
@@ -43,7 +47,8 @@ class StubParserTest extends \EasyPanelTest\TestCase
     }
 
     /** @test * */
-    public function properties_value_will_filled_in_actions(){
+    public function properties_value_will_filled_in_actions()
+    {
         $this->parser->setInputs(['title' => 'text', 'content' => 'textarea']);
         $expected1 = '\'title\' => $this->title,';
         $expected2 = '\'content\' => $this->content,';
@@ -60,7 +65,8 @@ class StubParserTest extends \EasyPanelTest\TestCase
     }
 
     /** @test * */
-    public function validation_will_be_parsed(){
+    public function validation_will_be_parsed()
+    {
         $this->parser->setValidationRules([
             'title' => 'required',
             'content' => 'min:10'
@@ -73,7 +79,8 @@ class StubParserTest extends \EasyPanelTest\TestCase
     }
 
     /** @test * */
-    public function data_string_will_be_normalized(){
+    public function data_string_will_be_normalized()
+    {
         $this->parser->setFields(['title']);
         $expected = '<td class="">{{ $article->title }}</td>';
         $this->assertStringContainsString($expected, $this->parser->parseDataInBlade());
@@ -84,7 +91,8 @@ class StubParserTest extends \EasyPanelTest\TestCase
     }
 
     /** @test * */
-    public function titles_of_table_will_be_parsed(){
+    public function titles_of_table_will_be_parsed()
+    {
         $this->parser->setFields(['title']);
         $expected = "wire:click=\"sort('title')\"";
         $expected2 = "{{ __('Title') }}";
@@ -99,13 +107,14 @@ class StubParserTest extends \EasyPanelTest\TestCase
     }
 
     /** @test * */
-    public function properties_will_be_filled_for_actions(){
+    public function properties_will_be_filled_for_actions()
+    {
         $this->parser->setInputs([
             'title' => 'text',
             'body' => 'ckeditor',
         ]);
 
-        $expected1 = '$this->title = $this->article->title;'."\n";
+        $expected1 = '$this->title = $this->article->title;' . "\n";
         $expected2 = '$this->body = $this->article->body;';
         $parsedString = $this->parser->parseSetPropertiesValue();
         $this->assertStringContainsString($expected1, $parsedString);
@@ -113,7 +122,8 @@ class StubParserTest extends \EasyPanelTest\TestCase
     }
 
     /** @test * */
-    public function input_class_will_returned_based_on_name(){
+    public function input_class_will_returned_based_on_name()
+    {
         $result = $this->parser->getInputClassNamespace('text');
         $expected = Text::class;
         $this->assertEquals($result, $expected);
@@ -124,13 +134,15 @@ class StubParserTest extends \EasyPanelTest\TestCase
     }
 
     /** @test * */
-    public function if_the_input_name_is_incorrect_it_will_throw_exception(){
-        $this->expectException(\Exception::class);
+    public function if_the_input_name_is_incorrect_it_will_throw_exception()
+    {
+        $this->expectException(Exception::class);
         $this->parser->getInputClassNamespace('dasdsadas');
     }
 
     /** @test * */
-    public function fields_will_be_normalized(){
+    public function fields_will_be_normalized()
+    {
         $normalizedField = $this->parser->normalizeField('email');
         $this->assertInstanceOf(Field::class, $normalizedField);
 
@@ -138,7 +150,8 @@ class StubParserTest extends \EasyPanelTest\TestCase
     }
 
     /** @test * */
-    public function inputs_will_be_normalized(){
+    public function inputs_will_be_normalized()
+    {
         $normalizedField = $this->parser->normalizeInput('email', 'email');
         $this->assertInstanceOf(Email::class, $normalizedField);
         $this->assertEquals($normalizedField->getTitle(), 'Email');

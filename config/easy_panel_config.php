@@ -50,6 +50,9 @@ return [
     'database' => [
         'connection' => env('EASY_PANEL_DB_CONNECTION', env('DB_CONNECTION', 'mysql')),
         'panel_admin_table' => 'panel_admins',
-        'crud_table' => 'cruds'
+        'crud_table' => 'cruds',
+        'roles_table' => 'roles',
+        'roles_users_table' => 'role_user',
+
     ]
 ];

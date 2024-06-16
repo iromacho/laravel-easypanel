@@ -5,12 +5,14 @@ namespace EasyPanelTest\Integration;
 
 use EasyPanel\Models\PanelAdmin;
 use EasyPanelTest\Dependencies\User;
+use EasyPanelTest\TestCase;
 
-class PanelAdminModelTest extends \EasyPanelTest\TestCase
+class PanelAdminModelTest extends TestCase
 {
 
     /** @test * */
-    public function user_relation_is_an_instance_of_user_model(){
+    public function user_relation_is_an_instance_of_user_model()
+    {
         config()->set('easy_panel.user_model', User::class);
 
         $panelAdmin = PanelAdmin::query()->create([

@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+@php use EasyPanel\Support\Contract\LangManager; @endphp
+@php use Illuminate\Support\Facades\App; @endphp
+        <!DOCTYPE html>
 <html dir="{{ config('easy_panel.rtl_mode') ? 'rtl' : 'ltr' }}" lang="en">
 
 <head>
@@ -44,7 +46,7 @@
             <div class="navbar-header" data-logobg="skin6">
                 <!-- This is for the sidebar toggle which is visible on mobile only -->
                 <a class="nav-toggler waves-effect waves-light d-block d-md-none" href="javascript:void(0)"><i
-                        class="ti-menu ti-close"></i></a>
+                            class="ti-menu ti-close"></i></a>
 
                 <!-- Logo -->
                 <div class="navbar-brand">
@@ -69,7 +71,7 @@
                 <a class="topbartoggler d-block d-md-none waves-effect waves-light" href="javascript:void(0)"
                    data-toggle="collapse" data-target="#navbarSupportedContent"
                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><i
-                        class="ti-more"></i></a>
+                            class="ti-more"></i></a>
             </div>
             <!-- ============================================================== -->
             <!-- End Logo -->
@@ -83,13 +85,14 @@
                     <li class="nav-item d-none d-md-block">
                         <a class="nav-link" href="javascript:void(0)">
                             <div class="customize-input">
-                                <select id="langChanger" class="form-control bg-white custom-shadow border-0 h-25" style="border-radius: 6px">
-                                    @foreach(\EasyPanel\Support\Contract\LangManager::getLanguages() as $key => $value)
-                                        <option value="{{ $key }}" {{ \Illuminate\Support\Facades\App::getLocale() === $key ? 'selected' : '' }}>{{ $value }}</option>
+                                <select id="langChanger" class="form-control bg-white custom-shadow border-0 h-25"
+                                        style="border-radius: 6px">
+                                    @foreach(LangManager::getLanguages() as $key => $value)
+                                        <option value="{{ $key }}" {{ App::getLocale() === $key ? 'selected' : '' }}>{{ $value }}</option>
                                     @endforeach
                                 </select>
                                 <script>
-                                    document.getElementById('langChanger').addEventListener('change', function (){
+                                    document.getElementById('langChanger').addEventListener('change', function () {
                                         window.location.href = "{{ route('admin.setLang') }}?lang=" + this.value;
                                     });
                                 </script>
@@ -102,14 +105,14 @@
                         <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">
                                 <span class="ml-2 d-none d-lg-inline-block"><span>{{ __('Hello') }},</span> <span
-                                        class="text-dark">@user('name')</span> <i data-feather="chevron-down"
-                                                                                  class="svg-icon"></i></span>
+                                            class="text-dark">@user('name')</span> <i data-feather="chevron-down"
+                                                                                      class="svg-icon"></i></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right user-dd animated pb-0 flipInY">
                             <a class="dropdown-item" href="javascript:void(0)"
                                onclick="event.preventDefault(); document.querySelector('#logout').submit()"><i
-                                    data-feather="power"
-                                    class="svg-icon mr-2 ml-1"></i>
+                                        data-feather="power"
+                                        class="svg-icon mr-2 ml-1"></i>
                                 {{ __('Logout') }}</a>
                             <form id="logout" action="@route(getRouteName().'.logout')" method="post"> @csrf </form>
                         </div>
@@ -122,8 +125,8 @@
     <!-- End Topbar header -->
 
     <!-- Left Sidebar -->
-@include('admin::layouts.sidebar')
-<!-- End Left Sidebar -->
+    @include('admin::layouts.sidebar')
+    <!-- End Left Sidebar -->
 
 
     <!-- Page wrapper  -->
@@ -138,7 +141,9 @@
         <!-- End Container fluid  -->
 
         <!-- footer -->
-        <footer class="footer text-center text-muted">Adminmart Template, <a href="https://github.com/rezaamini-ir/laravel-easypanel">EasyPanel</a> Package.</footer>
+        <footer class="footer text-center text-muted">Adminmart Template, <a
+                    href="https://github.com/rezaamini-ir/laravel-easypanel">EasyPanel</a> Package.
+        </footer>
         <!-- End footer -->
     </div>
 </div>
@@ -182,7 +187,7 @@
         localStorage.setItem('theme', theme);
     });
 
-    function setThemeAttributes(theme){
+    function setThemeAttributes(theme) {
         if (theme === 'dark') {
             document.querySelector('body').classList.add('dark');
             document.querySelector('#main-wrapper').setAttribute('data-theme', 'dark');
